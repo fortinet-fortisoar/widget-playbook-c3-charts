@@ -1,0 +1,24 @@
+{
+    "name": "danny_playbook_c3_charts",
+    "version": "1.0.4",
+    "title": "Playbook C3 Charts",
+    "subTitle": "Danny Playbook C3 Charts",
+    "metadata": {
+        "pages": [
+            "Dashboard",
+            "View Panel",
+            "Reports"
+        ],
+        "category": [
+            "Analytics and SIEM",
+            "Reporting"
+        ],
+        "certified": "No",
+        "publisher": "Fortinet CSE",
+        "description": "",
+        "compatibility": [
+            "7.4.3"
+        ]
+    },
+    "development": false
+}
