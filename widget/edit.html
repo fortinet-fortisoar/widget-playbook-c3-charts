@@ -1,0 +1,166 @@
+<!-- Copyright start
+    Copyright (C) 2008 - 2023 Fortinet Inc.
+    All rights reserved.
+    FORTINET CONFIDENTIAL & FORTINET PROPRIETARY SOURCE CODE
+  Copyright end -->
+<!-- Edit Status 
+    author: Danny
+    modified: 240324
+-->
+<form data-ng-submit="save()" class="noMargin" name="editWidgetForm" data-ng-class="{'state-wait': processing }"
+    novalidate>
+    <div class="modal-header">
+        <h3 class="modal-title col-md-9">Danny Playbook C3 Charts</h3>
+        <button type="button" class="close" data-ng-click="cancel()" data-dismiss="modal" aria-label="Close"
+            id="close-edit-widget-form-btn">
+            <div aria-hidden="true" class="version-button">+</div>
+        </button>
+    </div>
+    <div class="modal-body">
+        <div id="{{container_uid}}">
+            <span>Title</span>
+            <div data-cs-field="title_field" data-ng-model="config.title"></div>
+
+
+            <hr><span>Select Chart Render Method</span>
+            <!-- Radio Button to select config.render_method as "user_input" or "playbook" -->
+            <div class="radio">
+                <label><input type="radio" data-ng-model="config.render_method" value="user_input">Render data by user
+                    input JSON</label>
+                <span data-uib-tooltip="Renders the data by user input JSON." data-tooltip-append-to-body="true"><i
+                        class="icon icon-information font-Size-13"></i></span>
+            </div>
+            <div class="radio">
+                <label><input type="radio" data-ng-model="config.render_method" value="playbook">Render data by
+                    playbook</label>
+                <span data-uib-tooltip="Fetches the data from playbook and Renders on the Chart."
+                    data-tooltip-append-to-body="true"><i class="icon icon-information font-Size-13"></i></span>
+            </div>
+            <!-- Radio Button End -->
+
+
+            <hr><span>Select field to re-render chart when field data is changed</span>
+            <div div class="form-group margin-top-md">
+                <div class="row">
+                    <div class="col-md-8">
+                        <select class="form-control"
+                            data-ng-options="module_field.name for module_field in module_fields | orderBy: 'name'"
+                            data-ng-model="selected_module_field">
+                            <option value="">Select a field</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <div>
+                            <button type="button" class="btn btn-primary"
+                                data-ng-click="add_module_field_to_watch(selected_module_field);"
+                                data-ng-disabled="!selected_module_field">Add</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="margin-top-xlg" data-if="config.datasetLinkingModules.length > 0">
+                    <ul class="padding-left-0 overflow-hidden">
+                        <li class="column-editor-block margin-right-sm margin-bottom-sm column-editor-block padding-top-4px padding-left-md font-size-14 padding-bottom-sm padding-right-md"
+                            data-ng-repeat="item in config.selected_module_fields | orderBy: 'name'">
+                            <div class="margin-right-md">{{item.name}}</div>
+                            <span class="icon icon-close text-danger pull-right margin-top-sm"
+                                data-ng-click="remove_module_field_to_watch($index)" role="button"></span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+
+
+            <!-- Select Chart type -->
+            <div data-ng-show="config.render_method == 'user_input'">
+                <hr><span>Select Chart type</span>
+                <select class="form-control" data-ng-options="_type for _type in chart_types"
+                    data-ng-model="config.selected_chart_type" data-ng-change="chart_type_changed()" novalidate=""
+                    required>
+                    <option value="">Select a chart type</option>
+                </select>
+            </div>
+
+
+            <!-- Module Field Debug (temporary inputs) -->
+            <div data-ng-show="config.render_method == 'user_input'">
+                <hr>
+                <div class="display-flex-space-between">
+                    <span>Module Field Debug (temporary inputs)</span>
+                    <span class="fa btn widget-action-icon btn-sm pull-right"
+                        data-ng-click="json_jinja_debug_field_collapsed = !json_jinja_debug_field_collapsed"
+                        data-ng-class="{'fa-caret-up': !json_jinja_debug_field_collapsed, 'fa-caret-down': json_jinja_debug_field_collapsed}"></span>
+                </div>
+                <div data-ng-hide="json_jinja_debug_field_collapsed">
+                    <div data-cs-field="json_jinja_debug_field" data-ng-model="config.json_jinja_debug_model"></div>
+                </div>
+            </div>
+
+
+            <!-- Select Playbook to Render -->
+            <div data-ng-show="config.render_method == 'playbook'">
+                <hr>
+                <div class="display-flex-space-between">
+                    <span>Select Playbook to Render</span>
+                    <span class="fa btn widget-action-icon btn-sm pull-right"
+                        data-ng-click="playbook_selection_collapsed = !playbook_selection_collapsed"
+                        data-ng-class="{'fa-caret-up': !playbook_selection_collapsed, 'fa-caret-down': playbook_selection_collapsed}"></span>
+                </div>
+                <div data-ng-hide="playbook_selection_collapsed">
+                    <div data-ng-show="!processing" class="ng-scope" aria-hidden="false">
+                        <div data-cs-playbook-lookup="config.selected_playbook"></div>
+                    </div>
+                    <cs-spinner data-ng-show="processing" class="ng-scope ng-isolate-scope ng-hide" aria-hidden="true">
+                        <div class="loader" data-ng-class="{'background' : showBackground, 'margin-0': noMargin}">
+                            <div class="cs-spinner"></div>
+                        </div>
+                    </cs-spinner>
+                </div>
+            </div>
+
+
+            <!-- Json Data -->
+            <div>
+                <hr>
+                <div class="display-flex-space-between">
+                    <span>Json Data</span>
+                    <span class="fa btn widget-action-icon btn-sm pull-right"
+                        data-ng-click="json_input_collapsed = !json_input_collapsed"
+                        data-ng-class="{'fa-caret-up': !json_input_collapsed, 'fa-caret-down': json_input_collapsed}"></span>
+                </div>
+                <div data-ng-hide="json_input_collapsed">
+                    <div data-ng-show="!json_loading" class="ng-scope" aria-hidden="false">
+                        <div data-cs-field="json_input_field" data-ng-model="config.json_input_model"></div>
+                    </div>
+                    <cs-spinner data-ng-show="json_loading" class="ng-scope ng-isolate-scope ng-hide"
+                        aria-hidden="true">
+                        <div class="loader" data-ng-class="{'background' : showBackground, 'margin-0': noMargin}">
+                            <div class="cs-spinner"></div>
+                        </div>
+                    </cs-spinner>
+                </div>
+            </div>
+
+
+            <!-- Rendered Chart -->
+            <div>
+                <hr>
+                <div class="display-flex-space-between">
+                    <span>Rendered Chart</span>
+                    <span class="icon icon-refresh btn btn-sm widget-action-icon pull-right" ng-click="refresh()"
+                        data-uib-tooltip="Refresh" role="button" tabindex="0"></span>
+                    <span class="icon icon-empty-recycle-bin btn btn-sm widget-action-icon pull-right"
+                        ng-click="chart_unload()" data-uib-tooltip="Clear Chart Data" role="button" tabindex="0"></span>
+                </div>
+                <div id="{{chart_uid}}"></div>
+            </div>
+
+            <hr><span>End</span>
+        </div>
+    </div>
+    <div class="modal-footer">
+        <button id="edit-widget-save" type="submit" class="btn btn-sm btn-primary"><i
+                class="icon icon-check margin-right-sm"></i>Save</button>
+        <button id="edit-widget-cancel" type="button" class="btn btn-sm btn-default" data-ng-click="cancel()"><i
+                class="icon icon-close margin-right-sm"></i>Close</button>
+    </div>
+</form>
