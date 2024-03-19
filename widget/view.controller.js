@@ -10,11 +10,11 @@
 (function () {
     angular
         .module('cybersponse')
-        .controller('danny_playbook_c3_charts104Ctrl', danny_playbook_c3_charts104Ctrl);
+        .controller('danny_playbook_c3_charts105Ctrl', danny_playbook_c3_charts105Ctrl);
 
-    danny_playbook_c3_charts104Ctrl.$inject = ["$scope", "config", "websocketService", "FormEntityService", "API", "toaster", "$filter", "$resource"];
+    danny_playbook_c3_charts105Ctrl.$inject = ["$scope", "config", "websocketService", "FormEntityService", "API", "toaster", "$filter", "$resource"];
 
-    function danny_playbook_c3_charts104Ctrl($scope, config, websocketService, FormEntityService, API, toaster, $filter, $resource) {
+    function danny_playbook_c3_charts105Ctrl($scope, config, websocketService, FormEntityService, API, toaster, $filter, $resource) {
         $scope.config = config;
         $scope.refresh = refresh;
 
@@ -185,6 +185,7 @@
         }
         // -------------------------------------------------------- playbook service end --------------------------------------------------------
 
+        const update_interval = null;
         const form_entity = FormEntityService.get();
         if (form_entity !== undefined) {
             websocketService.subscribe(form_entity.module, function (data) {
@@ -201,6 +202,11 @@
             });
         }
 
+        $scope.$on("csFields:viewValueChange", function(event, changed_entity) {
+            if ($scope.config.selected_module_fields.some(obj => obj.name === changed_entity.field.name)) {
+                refresh();
+            }
+        });
 
         function json_input_model_changed(json_input_model) {
             $scope.json_input_model = json_input_model;
@@ -229,14 +235,24 @@
                 });
         }
 
-
-        function refresh() {
+        let refresh_timeout = null; 
+        function _refresh() {
             if ($scope.config.render_method == "playbook") {
                 execute_playbook($scope.config.selected_playbook);
             }
             else if ($scope.config.render_method == "user_input") {
                 reload_user_input();
             }
+        }
+
+        function refresh() {
+            if (refresh_timeout) {
+                clearTimeout(refresh_timeout);
+            }
+
+            refresh_timeout = setTimeout(() => {
+                _refresh();
+            }, 1000);
         }
         refresh();
 
@@ -283,9 +299,6 @@
 
         $scope.$on("$destroy", function () {
             websocket_unsubscribe();
-            if ($scope.chart) {
-                $scope.chart.destroy();
-            }
         });
     }
 })();

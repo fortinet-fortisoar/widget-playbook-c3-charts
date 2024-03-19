@@ -10,11 +10,11 @@
 (function () {
     angular
         .module("cybersponse")
-        .controller("editDanny_playbook_c3_charts104Ctrl", editDanny_playbook_c3_charts104Ctrl);
+        .controller("editDanny_playbook_c3_charts105Ctrl", editDanny_playbook_c3_charts105Ctrl);
 
-    editDanny_playbook_c3_charts104Ctrl.$inject = ["$scope", "$uibModalInstance", "config", "Field", "API", "$resource", "FormEntityService", "Entity", "toaster", "websocketService", "$filter"];
+    editDanny_playbook_c3_charts105Ctrl.$inject = ["$scope", "$uibModalInstance", "config", "Field", "API", "$resource", "FormEntityService", "Entity", "toaster", "websocketService", "$filter"];
 
-    function editDanny_playbook_c3_charts104Ctrl($scope, $uibModalInstance, config, Field, API, $resource, FormEntityService, Entity, toaster, websocketService, $filter) {
+    function editDanny_playbook_c3_charts105Ctrl($scope, $uibModalInstance, config, Field, API, $resource, FormEntityService, Entity, toaster, websocketService, $filter) {
         $scope.config = config;
         $scope.cancel = cancel;
         $scope.save = save;
